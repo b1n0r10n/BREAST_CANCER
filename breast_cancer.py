@@ -61,7 +61,7 @@ def predict_breast_cancer(img_pil):
 # 4. Streamlit App
 # -------------------------------------------
 st.title("Breast Cancer Detection App")
-st.write("Aplikasi ini menggunakan model CNN untuk memdeteksi apakah gambar citra Ultrasound dari payudara itu terkena kanker atau normal. Silakan upload gambar MRI di bawah ini untuk diprediksi.")
+st.write("Aplikasi ini menggunakan model CNN untuk memdeteksi apakah gambar Ultrasound termasuk kategori Benign, Malignant, Normal. Silakan upload gambar Ultrasound di bawah ini untuk diprediksi.")
 
 # Upload file
 uploaded_file = st.file_uploader("Upload gambar di sini", type=["png", "jpg", "jpeg"])
