@@ -61,7 +61,7 @@ def predict_breast_cancer(img_pil):
 # 4. Streamlit App
 # -------------------------------------------
 st.title("Breast Cancer Prediction App")
-st.write("Silakan upload gambar **Breast Cancer** (misalnya Mammogram atau histopathological image) untuk diprediksi.")
+st.write("Silakan upload gambar **Breast Cancer** dari citra ultrasound untuk dideteksi.")
 
 # Upload file
 uploaded_file = st.file_uploader("Upload gambar di sini", type=["png", "jpg", "jpeg"])
