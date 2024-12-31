@@ -64,7 +64,7 @@ st.title("Breast Cancer Detection App")
 st.write("Aplikasi ini menggunakan model CNN untuk memdeteksi apakah gambar Ultrasound termasuk kategori Benign, Malignant, Normal. Silakan upload gambar Ultrasound di bawah ini untuk diprediksi.")
 
 # Upload file
-uploaded_file = st.file_uploader("Upload gambar Ultrasound", type=["png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader("Upload Gambar Ultrasound", type=["png", "jpg", "jpeg"])
 
 if uploaded_file is not None:
     # Baca file sebagai PIL Image
