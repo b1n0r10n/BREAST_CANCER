@@ -116,6 +116,9 @@ uploaded_file = st.file_uploader("Upload Gambar Ultrasound", type=["png", "jpg",
 # -------------------------------------------
 # 4.4 Tampilkan Gambar, Prediksi, dan Fitur Tambahan
 # -------------------------------------------
+# -------------------------------------------
+# 4.4 Tampilkan Gambar, Prediksi, dan Fitur Tambahan
+# -------------------------------------------
 if uploaded_file is not None:
     try:
         # Baca file sebagai PIL Image
@@ -151,21 +154,24 @@ if uploaded_file is not None:
                 st.bar_chart(df_probs)
                 
                 # -------------------------------------------
-                # 4.6 Menambahkan Opsi Download Hasil Prediksi
+                # 4.6 Menambahkan Opsi Download Hasil Prediksi dan Probabilitas
                 # -------------------------------------------
-                st.write("Anda dapat mendownload hasil prediksi dalam bentuk file CSV.")
+                st.write("Anda dapat mendownload hasil prediksi dan probabilitas dalam bentuk file CSV.")
                 
-                # Membuat DataFrame untuk hasil prediksi
+                # Membuat DataFrame untuk hasil prediksi dan probabilitas
                 df_result = pd.DataFrame({
                     'Label': [predicted_label],
                     'Probabilitas (%)': [probability]
                 })
+
+                df_probs_reset = df_probs.reset_index()  # Untuk menambahkan probabilitas ke file CSV
+                df_download = pd.concat([df_result, df_probs_reset], ignore_index=True)
                 
                 # Tombol download
                 st.download_button(
-                    label="Download Hasil Prediksi",
-                    data=df_result.to_csv(index=False),
-                    file_name='hasil_prediksi.csv',
+                    label="Download Hasil Prediksi dan Probabilitas",
+                    data=df_download.to_csv(index=False),
+                    file_name='hasil_prediksi_probabilitas.csv',
                     mime='text/csv',
                 )
     except Exception as e:
