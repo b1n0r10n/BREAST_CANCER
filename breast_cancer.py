@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.vgg16 import preprocess_input  # atau sesuai kebutuhan
 from PIL import Image
 import pandas as pd  # Untuk visualisasi dan download data
+import gdown
 
 # -------------------------------------------
 # 1. Load model (dengan caching agar tidak re-load setiap ada interaksi)
