@@ -1,13 +1,15 @@
 import streamlit as st
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.vgg16 import preprocess_input  # atau sesuai kebutuhan
+from tensorflow.keras.applications.vgg16 import preprocess_input  # Sesuaikan jika model Anda berbeda
 from PIL import Image
-import pandas as pd  # Untuk visualisasi dan download data
+import pandas as pd  # Untuk visualisasi dan manipulasi data
 import gdown
 import os
+from io import BytesIO
+import openpyxl
+from openpyxl.chart import BarChart, Reference
 
 # -------------------------------------------
 # 1. Load model (dengan caching agar tidak re-load setiap ada interaksi)
@@ -116,9 +118,6 @@ uploaded_file = st.file_uploader("Upload Gambar Ultrasound", type=["png", "jpg",
 # -------------------------------------------
 # 4.4 Tampilkan Gambar, Prediksi, dan Fitur Tambahan
 # -------------------------------------------
-# -------------------------------------------
-# 4.4 Tampilkan Gambar, Prediksi, dan Fitur Tambahan
-# -------------------------------------------
 if uploaded_file is not None:
     try:
         # Baca file sebagai PIL Image
@@ -154,25 +153,45 @@ if uploaded_file is not None:
                 st.bar_chart(df_probs)
                 
                 # -------------------------------------------
-                # 4.6 Menambahkan Opsi Download Hasil Prediksi dan Probabilitas
+                # 4.6 Menambahkan Opsi Download Hasil Prediksi dan Visualisasi (Excel)
                 # -------------------------------------------
-                st.write("Anda dapat mendownload hasil prediksi dan probabilitas dalam bentuk file CSV.")
-                
-                # Membuat DataFrame untuk hasil prediksi dan probabilitas
-                df_result = pd.DataFrame({
-                    'Label': [predicted_label],
-                    'Probabilitas (%)': [probability]
-                })
+                st.write("Anda dapat mendownload hasil prediksi dan probabilitas dalam bentuk file Excel dengan visualisasi.")
 
-                df_probs_reset = df_probs.reset_index()  # Untuk menambahkan probabilitas ke file CSV
-                df_download = pd.concat([df_result, df_probs_reset], ignore_index=True)
-                
-                # Tombol download
+                # Membuat workbook Excel
+                wb = openpyxl.Workbook()
+                ws = wb.active
+                ws.title = "Hasil Prediksi"
+
+                # Menambahkan hasil prediksi ke Excel
+                ws.append(["Label", "Probabilitas (%)"])
+                ws.append([predicted_label, probability])
+                ws.append([])  # Baris kosong
+                ws.append(["Kelas", "Probabilitas (%)"])
+                for index, row in df_probs.reset_index().iterrows():
+                    ws.append(row.tolist())
+
+                # Menambahkan grafik batang ke Excel
+                chart = BarChart()
+                chart.title = "Visualisasi Probabilitas"
+                chart.x_axis.title = "Kelas"
+                chart.y_axis.title = "Probabilitas (%)"
+                data = Reference(ws, min_col=2, min_row=5, max_row=4 + len(prob_labels))
+                categories = Reference(ws, min_col=1, min_row=5, max_row=4 + len(prob_labels))
+                chart.add_data(data, titles_from_data=False)
+                chart.set_categories(categories)
+                ws.add_chart(chart, "E8")  # Menempatkan grafik di sel E8
+
+                # Simpan Excel ke buffer
+                excel_buffer = BytesIO()
+                wb.save(excel_buffer)
+                excel_buffer.seek(0)
+
+                # Tombol download untuk Excel
                 st.download_button(
-                    label="Download Hasil Prediksi dan Probabilitas",
-                    data=df_download.to_csv(index=False),
-                    file_name='hasil_prediksi_probabilitas.csv',
-                    mime='text/csv',
+                    label="Download Hasil Prediksi dan Visualisasi (Excel)",
+                    data=excel_buffer,
+                    file_name='hasil_prediksi_visualisasi.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
     except Exception as e:
         st.error(f"Gagal memproses gambar: {e}")
