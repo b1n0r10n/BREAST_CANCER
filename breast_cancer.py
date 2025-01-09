@@ -12,7 +12,22 @@ import pandas as pd  # Untuk visualisasi dan download data
 # -------------------------------------------
 @st.cache_resource
 def load_breast_cancer_model():
-    model_path = 'breast_cancer.h5'
+    # ID file Google Drive untuk model
+    file_id = "1KYlavpAChrn_HhL5DGnM_o9PTKFeqfK1"  # Ganti dengan ID file model Anda di Google Drive
+    model_path = "breast_cancer.h5"
+    
+    # Cek apakah model sudah ada di lokal, jika tidak, unduh dari Google Drive
+    if not os.path.exists(model_path):
+        with st.spinner("Mengunduh model dari Google Drive..."):
+            try:
+                url = f"https://drive.google.com/uc?id={file_id}"
+                gdown.download(url, model_path, quiet=False)
+                st.success("Model berhasil diunduh.")
+            except Exception as e:
+                st.error(f"Gagal mengunduh model: {e}")
+                return None
+
+    # Memuat model menggunakan TensorFlow
     try:
         model = load_model(model_path)
         return model
